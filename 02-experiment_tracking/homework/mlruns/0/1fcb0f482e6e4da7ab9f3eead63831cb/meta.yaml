@@ -1,0 +1,15 @@
+artifact_uri: file:///workspaces/mlops-zoomcamp/02-experiment_tracking/homework/mlruns/0/1fcb0f482e6e4da7ab9f3eead63831cb/artifacts
+end_time: 1748220853719
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 1fcb0f482e6e4da7ab9f3eead63831cb
+run_name: traveling-smelt-808
+run_uuid: 1fcb0f482e6e4da7ab9f3eead63831cb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748220830681
+status: 4
+tags: []
+user_id: codespace
