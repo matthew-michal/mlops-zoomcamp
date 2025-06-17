@@ -9,7 +9,7 @@ COPY [ "Pipfile", "Pipfile.lock", "./"]
 
 RUN pipenv install --system --deploy
 
-COPY [ "04-deployment/web-service/predict.py", "04-deployment/web-service/xgb_reg.bin", "./"]
+COPY [ "04-deployment/web-service/predict.py", "04-deployment/web-service/xgb_reg.bin","04-deployment/web-service/lin_reg.bin", "./"]
 
 EXPOSE 9696
 
