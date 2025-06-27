@@ -12,11 +12,22 @@ import mlflow
 
 # # Load model as a PyFuncModel.
 # model = mlflow.pyfunc.load_model(logged_model)
+def get_model_path(run_id):
+    model_location = os.getenv('MODEL_LOCATION')
+
+    if model_location is not None:
+        print('From local')
+        return model_location
+    print('From S3')
+    model_bucket = os.getenv('MODEL_BUCKET', 'mlflow-artifact-mmichal')
+    experiment_id = os.getenv('MLFLOW_EXPERIMENT_ID', '2')
+
+    logged_model = f"s3://{model_bucket}/{experiment_id}/{run_id}/artifacts/model"
+    # s3://mlflow-artifact-mmichal/2/e0b68d8dd70d4e6fbcaf656cf45a31d5/artifacts/model
+    return logged_model
 
 def load_model(run_id: str):
-    logged_model = f"s3://mlflow-artifact-mmichal/2/{run_id}/artifacts/model"
-    # logged_model = f'runs:/{RUN_ID}/model'
-
+    logged_model = get_model_path(run_id=run_id)
     # Load model as a PyFuncModel.
     model = mlflow.pyfunc.load_model(logged_model)
     return model

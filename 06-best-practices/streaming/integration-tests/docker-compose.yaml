@@ -1,0 +1,23 @@
+services:
+  backend: # Defines a service named 'backend'
+    image: ${LOCAL_IMAGE_NAME}
+    ports:
+      - "8080:8080" # Maps port 8000 on the host to port 8000 in the container
+    volumes:
+      - /workspaces/mlops-zoomcamp/06-best-practices/streaming/integration-tests/model:/app/model # Mounts the current directory into the /app directory in the container
+    depends_on:
+      - db # Specifies that 'web' depends on the 'db' service
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/mydatabase # Environment variable for the web service
+
+  db: # Defines a service named 'db'
+    image: postgres:13 # Uses the official PostgreSQL 13 image from Docker Hub
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password # Environment variables for the database
+    volumes:
+      - db_data:/var/lib/postgresql/data # Mounts a named volume for persistent database data
+
+volumes:
+  db_data: # Defines a named volume for the database data persistence
