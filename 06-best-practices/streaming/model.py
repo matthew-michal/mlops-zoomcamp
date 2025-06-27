@@ -21,10 +21,17 @@ def load_model(run_id: str):
     model = mlflow.pyfunc.load_model(logged_model)
     return model
 
+def base64_decode(encoded_data):
+    payload = base64.b64decode(encoded_data).decode("utf-8")
+    # print("Decoded payload: " + str(payload))
+    ride_event = json.loads(payload)
+    return ride_event
+
 
 class ModelService():
-    def __init__(self, model):
+    def __init__(self, model, run_id):
         self.model = model
+        self.model_version = run_id
 
     def prepare_features(self, ride):
         features = {}
@@ -45,9 +52,8 @@ class ModelService():
 
         for record in event['Records']:
             # Kinesis data is base64 encoded so decode here
-            payload = base64.b64decode(record["kinesis"]["data"]).decode("utf-8")
-            print("Decoded payload: " + str(payload))
-            ride_event = json.loads(payload)
+            encoded_data = record["kinesis"]["data"]
+            ride_event = base64_decode(encoded_data)
             # print("Decoded payload: " + str(ride_event))
 
             ride = ride_event['ride']
@@ -58,7 +64,7 @@ class ModelService():
 
             prediction_event = {
                 'model': 'ride_duration_prediction_model',
-                'version': '123',
+                'version': self.model_version,
                 'prediction': {
                     'ride_id': ride_id,
                     'ride_duration': prediction
@@ -87,5 +93,5 @@ class ModelService():
 
 def init(stream_name: str, run_id: str):
     model = load_model(run_id=run_id)
-    model_service = ModelService(model=model)
+    model_service = ModelService(model=model, run_id=run_id)
     return model_service
