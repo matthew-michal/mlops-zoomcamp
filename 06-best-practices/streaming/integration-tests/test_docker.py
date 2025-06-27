@@ -41,7 +41,7 @@ expected_response = {
 }
 
 diff = DeepDiff(actual_response, expected_response, significant_digits=1)
-print(diff)
+# print(diff)
 
 # assert len(diff) == 0
 assert 'type_changes' not in diff
