@@ -1,0 +1,22 @@
+services:
+  backend:
+    # Defines a service named 'backend'
+    image: ${LOCAL_IMAGE_NAME}
+    ports:
+      - "8080:8080" # Maps port 8000 on the host to port 8000 in the container
+    volumes:
+      - ./model:/app/model # Mounts the current directory into the /app directory in the container
+      - ~/.aws:/root/.aws
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1 # Environment variable for the web service
+      - MODEL_LOCATION=/app/model
+      - RUN_ID=e0b68d8dd70d4e6fbcaf656cf45a31d5
+      - TEST_RUN=True
+      - PREDICTIONS_STREAM_NAME=ride_predictions
+      - KINESIS_ENDPOINT_URL=https://kinesis:4566/
+  kinesis:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=kinesis
