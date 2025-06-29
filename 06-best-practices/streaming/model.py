@@ -7,6 +7,7 @@ import mlflow
 
 
 def get_model_path(run_id):
+    "Gets path for model from env or sets to S3 location"
     model_location = os.getenv("MODEL_LOCATION")
 
     if model_location is not None:
@@ -22,6 +23,7 @@ def get_model_path(run_id):
 
 
 def load_model(run_id: str):
+    "Load model from path location"
     logged_model = get_model_path(run_id=run_id)
     # Load model as a PyFuncModel.
     model = mlflow.pyfunc.load_model(logged_model)
@@ -29,6 +31,7 @@ def load_model(run_id: str):
 
 
 def base64_decode(encoded_data):
+    "Decode payload using base64"
     payload = base64.b64decode(encoded_data).decode("utf-8")
     ride_event = json.loads(payload)
     return ride_event

@@ -2,6 +2,7 @@ import model
 
 
 def test_prepare_features():
+    "Test prepare_features method of modelservice"
     model_service = model.ModelService(None, "123")
     ride = {
         "PULocationID": 130,
@@ -16,6 +17,7 @@ def test_prepare_features():
 
 
 def test_base64_decode():
+    "Test base64_decode function"
     base64_input = b"eyJQVUxvY2F0aW9uSUQiOiAxMzAsICJET0xvY2F0aW9uSUQiOiAyMDV9"
     actual_decoding = model.base64_decode(base64_input)
     expected_decoding = {
@@ -37,6 +39,7 @@ class ModelMock:
 
 
 def test_predict():
+    "Test predict method of modelservice"
     modelmock = ModelMock(10.0)
     model_service = model.ModelService(modelmock, "123")
     features = {"PU_DO": "130_205"}
@@ -47,6 +50,7 @@ def test_predict():
 
 
 def test_lambda_handler():
+    "Test overall lambda_handler code"
     modelmock = ModelMock(10.0)
     model_version = "123"
     model_service = model.ModelService(modelmock, model_version)

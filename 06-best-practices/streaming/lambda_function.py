@@ -16,5 +16,5 @@ model_service = model.init(
 
 
 def lambda_handler(event, context):
-
+    "Originally from AWS, this runs a lambda service on local machine"
     return model_service.lambda_handler(event)
