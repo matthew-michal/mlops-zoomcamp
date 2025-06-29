@@ -40,9 +40,10 @@ def base64_decode(encoded_data):
 
 
 class ModelService():
-    def __init__(self, model, run_id):
+    def __init__(self, model, run_id, callbacks=None):
         self.model = model
         self.model_version = run_id
+        self.callbacks = callbacks or []
 
     def prepare_features(self, ride):
         features = {}
@@ -82,6 +83,9 @@ class ModelService():
                     }
             }
 
+            for callback in self.callbacks:
+                callback(prediction_event)
+
             # kinesis_client.put_record(
             #     StreamName=STREAM_NAME,
             #     Data=json.dumps(prediction_event),
@@ -102,7 +106,40 @@ class ModelService():
         }
 
 
-def init(stream_name: str, run_id: str):
+class KinesisCallback:
+    def __init__(self, kinesis_client, prediction_stream_name):
+        self.kinesis_client = kinesis_client
+        self.prediction_stream_name = prediction_stream_name
+
+    def put_record(self, prediction_event):
+        ride_id = prediction_event['prediction']['ride_id']
+
+        self.kinesis_client.put_record(
+            StreamName=self.prediction_stream_name,
+            Data=json.dumps(prediction_event),
+            PartitionKey=str(ride_id),
+        )
+
+
+def create_kinesis_client():
+    endpoint_url = os.getenv('KINESIS_ENDPOINT_URL')
+
+    if endpoint_url is None:
+        return boto3.client('kinesis')
+
+    return boto3.client('kinesis', endpoint_url=endpoint_url)
+
+
+def init(stream_name: str, run_id: str, test_run: bool):
     model = load_model(run_id=run_id)
-    model_service = ModelService(model=model, run_id=run_id)
+
+    callbacks = []
+
+    if not test_run:
+        kinesis_client = create_kinesis_client()
+        kinesis_callback = KinesisCallback(kinesis_client, stream_name)
+        callbacks.append(kinesis_callback.put_record)
+
+    model_service = ModelService(model=model, run_id=run_id, callbacks=callbacks)
+
     return model_service
