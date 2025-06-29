@@ -12,7 +12,7 @@ services:
       - MODEL_LOCATION=/app/model
       - RUN_ID=e0b68d8dd70d4e6fbcaf656cf45a31d5
       - TEST_RUN=True
-      - PREDICTIONS_STREAM_NAME=ride_predictions
+      - PREDICTIONS_STREAM_NAME=${PREDICTIONS_STREAM_NAME}
       - KINESIS_ENDPOINT_URL=https://kinesis:4566/
   kinesis:
     image: localstack/localstack

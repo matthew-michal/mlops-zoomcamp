@@ -4,14 +4,6 @@ import boto3
 import os
 import mlflow
 
-# kinesis_client = boto3.client('kinesis')
-
-
-# logged_model = f"s3://mlflow-artifact-mmichal/2/{RUN_ID}/artifacts/model"
-# # logged_model = f'runs:/{RUN_ID}/model'
-
-# # Load model as a PyFuncModel.
-# model = mlflow.pyfunc.load_model(logged_model)
 def get_model_path(run_id):
     model_location = os.getenv('MODEL_LOCATION')
 
@@ -34,7 +26,6 @@ def load_model(run_id: str):
 
 def base64_decode(encoded_data):
     payload = base64.b64decode(encoded_data).decode("utf-8")
-    # print("Decoded payload: " + str(payload))
     ride_event = json.loads(payload)
     return ride_event
 
@@ -51,11 +42,8 @@ class ModelService():
         return features
 
     def predict(self, features):
-        # X = dv.transform(features)
-        # X = xgb.DMatrix(X)
         preds = self.model.predict(features)
         return float(preds[0])
-        # return 20.0
 
     def lambda_handler(self, event):
         # print(json.dumps(event))
@@ -66,7 +54,6 @@ class ModelService():
             # Kinesis data is base64 encoded so decode here
             encoded_data = record["kinesis"]["data"]
             ride_event = base64_decode(encoded_data)
-            # print("Decoded payload: " + str(ride_event))
 
             ride = ride_event['ride']
             ride_id = ride_event['ride_id']
